@@ -151,6 +151,13 @@ def parse_post(body):
     params = query.get("requestParameters") or {}
     if not isinstance(params, dict):
         raise BeaconError(400, "requestParameters must be one JSON object; lists of variants are not supported here")
+    params = {k: v for k, v in params.items() if k != "$schema"}
+    sets = [k for k, v in params.items() if isinstance(v, dict)]
+    if sets:  # the framework's form, {"g_variant": {...}}; the flat form is accepted too
+        if sets != ["g_variant"] or len(params) > 1:
+            raise BeaconError(400, "requestParameters: give the variant parameters either under g_variant or flat; "
+                                   f"this node reads no other parameter set ({', '.join(sets)} given)")
+        params = params["g_variant"]
     for name, value in params.items():
         if name not in _VARIANT_PARAMS:
             raise BeaconError(400, f"unknown request parameter {name!r}")
@@ -513,8 +520,8 @@ class Beacon:
         }
         if req.filters:
             summary["filters"] = [f["id"] for f in req.filters]
-        if req.params:
-            summary["requestParameters"] = req.params
+        if req.params:  # keyed by parameter set, as the framework's requestParameters schema requires
+            summary["requestParameters"] = {"g_variant": req.params}
         return summary
 
     def _meta(self, req, granularity, schemas):

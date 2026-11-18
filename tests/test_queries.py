@@ -70,6 +70,22 @@ class VariantQueries(unittest.TestCase):
         self.assertEqual(record_ids(r), ["chr10-94761900-C-T", "chr10-94762706-A-G", "chr10-94780653-G-A",
                                          "chr10-94781859-G-A"])
 
+    def test_post_takes_the_framework_form_and_the_flat_form(self):
+        params = {"referenceName": "10", "start": [94781858], "referenceBases": "G", "alternateBases": "A"}
+        answers = []
+        for request_parameters in ({"g_variant": params}, params):
+            body = {"meta": {"apiVersion": "v2.2.0"},
+                    "query": {"requestParameters": request_parameters, "requestedGranularity": "count"}}
+            status, r = ask(self.b, "/g_variants", method="POST", body=body)
+            self.assertEqual(status, 200, r)
+            self.assertEqual(r["meta"]["receivedRequestSummary"]["requestParameters"], {"g_variant": params})
+            answers.append(r["responseSummary"])
+        self.assertEqual(answers[0], answers[1])
+        body = {"meta": {"apiVersion": "v2.2.0"}, "query": {"requestParameters": {"datasets": {"datasetIds": ["x"]}}}}
+        status, r = ask(self.b, "/g_variants", method="POST", body=body)
+        self.assertEqual(status, 400)
+        self.assertIn("parameter set", r["error"]["errorMessage"])
+
     def test_questions_the_node_cannot_read_are_refused(self):
         for query, words in (
             (RS4244285 + "&assemblyId=GRCh37", "GRCh38 data only"),

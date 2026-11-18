@@ -39,6 +39,8 @@ class Schemas(unittest.TestCase):
             self.assertTrue(all(isinstance(f, str) for f in summary["filters"]))
         if "includeResultsetResponses" in summary:
             self.assertIn(summary["includeResultsetResponses"], {"ALL", "HIT", "MISS", "NONE"})
+        for value in summary.get("requestParameters", {}).values():  # a dictionary of parameter sets
+            self.assertIsInstance(value, dict)
 
     def check_meta(self, meta):  # beaconResponseMeta
         need(self, meta, ["beaconId", "apiVersion", "returnedSchemas", "returnedGranularity", "receivedRequestSummary"],

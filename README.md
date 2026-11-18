@@ -9,7 +9,7 @@ It follows the Beacon v2 specification, version 2.2.0, and is written with the P
 ## Run it
 
 ```bash
-git clone <this repository>
+git clone https://github.com/birinets/beacon-v2-synthetic-demo
 cd beacon-v2-synthetic-demo
 PYTHONPATH=src python3 -m beacon_demo serve
 ```
@@ -31,7 +31,7 @@ Without a server, `PYTHONPATH=src python3 -m beacon_demo query "/g_variants?gene
 
 ## What the node does
 
-**Endpoints.** `/info`, `/service-info`, `/configuration`, `/map`, `/entry_types`, `/filtering_terms`, `/datasets`, and the entry types `g_variants`, `individuals` and `biosamples`, each with single-entry lookups (`/g_variants/{id}`) and cross-lookups (`/g_variants/{id}/individuals`, `/individuals/{id}/g_variants`, `/datasets/{id}/individuals` and so on). GET with query parameters and POST with a Beacon request body both work. `/api` is optional in paths.
+**Endpoints.** `/info`, `/service-info`, `/configuration`, `/map`, `/entry_types`, `/filtering_terms`, `/datasets`, and the entry types `g_variants`, `individuals` and `biosamples`, each with single-entry lookups (`/g_variants/{id}`) and cross-lookups (`/g_variants/{id}/individuals`, `/individuals/{id}/g_variants`, `/datasets/{id}/individuals` and so on). GET with query parameters and POST with a Beacon request body both work. In a POST body, `requestParameters` may be nested under `g_variant`, as the 2.2.0 framework schema has it, or flat, as many Beacons send them; responses echo them under `g_variant`. `/api` is optional in paths.
 
 **Variant queries.** Sequence queries (`referenceName`, `start`, `referenceBases`, `alternateBases`), range queries (`start` and `end`: any variant that overlaps), bracket queries (two `start` and two `end` values), and gene queries (`geneId`), with `variantType`, `variantMinLength` and `variantMaxLength`. Positions are 0-based, as in Beacon v2. A deletion or insertion matches whether it is written with its anchor base, as a VCF writes it (`start=94949280, GA>G`), or without it (`start=94949281, A>-`): the node compares variants after trimming the bases both alleles share. `alternateBases=N` stands for any single base.
 
@@ -56,7 +56,7 @@ The first two follow the two Beacons of the European Genomic Data Infrastructure
 - No `aminoacidChange`, HGVS (`genomicAlleleShortForm`) or structural-variant queries; no cohorts, runs or analyses.
 - Trimming does not left-align: two spellings of an indel in a repeat that differ by a shift do not match.
 - Everything is held in memory; it suits thousands of variants, not whole genomes.
-- Responses were checked against the required fields and allowed values of the version 2.2.0 schemas, by tests written by hand from the schema files (`tests/test_spec.py`). They have not yet been checked with a full JSON Schema validator or the official Beacon verifier.
+- Every kind of response the node gives, and every record in it, validates against the version 2.2.0 JSON schemas with `jsonschema` (`tools/validate_schemas.py`, run in CI). Not checked: the GA4GH VRS 1.3 location object inside variant records (an external schema, stubbed in the check), formats such as date-time and uri, and the official Beacon verifier.
 
 ## Your own data
 
@@ -75,7 +75,17 @@ Use it only with data you may share in this way. For people's data, that needs c
 PYTHONPATH=src:tests python3 -m unittest discover -s tests
 ```
 
-The tests check the query rules against counts read straight from the synthetic VCF, the access levels, the refusals, the HTTP layer, the round trip through files, and the fields the specification requires.
+The tests check the query rules against counts read straight from the synthetic VCF, the access levels, the refusals, the HTTP layer, the round trip through files, and the fields the specification requires. The schema check needs the specification and `jsonschema`:
+
+```bash
+git clone --depth 1 --branch v2.2.0 https://github.com/ga4gh-beacon/beacon-v2 /tmp/beacon-v2
+pip install jsonschema
+python3 tools/validate_schemas.py --schemas /tmp/beacon-v2
+```
+
+## Contributing
+
+Issues and pull requests are welcome at the source repository, https://github.com/birinets/beacon-v2-synthetic-demo. The copy at https://github.com/indaga-ai/beacon-v2-synthetic-demo is kept identical. See `CHANGELOG.md` for what each version changed.
 
 ## Licence and sources
 
