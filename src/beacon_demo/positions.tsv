@@ -1,0 +1,32 @@
+# Variant positions for the synthetic cohort, GRCh38, VCF style (1-based position, REF with its anchor base for indels).
+# Selected from PharmCAT's public positions file (pharmcat_positions.vcf, PharmCAT 3.2.0); each REF was checked against
+# the GRCh38 reference with samtools faidx on 18 Nov 2026. Positions and alleles are dbSNP facts. Everything else in this
+# demo (people, genotypes, frequencies, phenotypes) is made up.
+#chrom	pos	id	ref	alt	gene
+chr1	97082391	rs67376798	T	A	DPYD
+chr1	97450058	rs3918290	C	T	DPYD
+chr1	97450065	rs72549303	TG	T	DPYD
+chr1	97515787	rs55886062	A	C	DPYD
+chr1	97579893	rs75017182	G	C	DPYD
+chr4	88131171	rs2231142	G	T	ABCG2
+chr6	18130687	rs1142345	T	C,G	TPMT
+chr6	18138997	rs1800460	C	T	TPMT
+chr6	18143724	rs1800462	C	G	TPMT
+chr7	99652770	rs41303343	T	TA	CYP3A5
+chr7	99665212	rs10264272	C	T	CYP3A5
+chr7	99672916	rs776746	T	C	CYP3A5
+chr10	94761900	rs12248560	C	T	CYP2C19
+chr10	94762706	rs28399504	A	G	CYP2C19
+chr10	94780653	rs4986893	G	A	CYP2C19
+chr10	94781859	rs4244285	G	A	CYP2C19
+chr10	94942290	rs1799853	C	T	CYP2C9
+chr10	94942309	rs7900194	G	A,T	CYP2C9
+chr10	94949281	rs9332131	GA	G	CYP2C9
+chr10	94981296	rs1057910	A	C	CYP2C9
+chr10	94981301	rs28371686	C	G	CYP2C9
+chr12	21176804	rs2306283	A	G	SLCO1B1
+chr12	21178615	rs4149056	T	C	SLCO1B1
+chr13	48037782	rs746071566	AGGAGTC	A,AGGAGTCGGAGTC	NUDT15
+chr13	48045719	rs116855232	C	T	NUDT15
+chr16	31096368	rs9923231	C	T	VKORC1
+chr19	15879621	rs2108622	C	T	CYP4F2

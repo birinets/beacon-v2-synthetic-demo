@@ -1,0 +1,25 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    # Python 3.9 has no build for the newest Ubuntu runner image, so it runs on Ubuntu 24.04.
+    runs-on: ${{ matrix.python-version == '3.9' && 'ubuntu-24.04' || 'ubuntu-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Unit tests
+        run: PYTHONPATH=src:tests python -m unittest discover -s tests -v
+      - name: Command line
+        run: |
+          PYTHONPATH=src python -m beacon_demo synth out/
+          PYTHONPATH=src python -m beacon_demo query --data out/ "/g_variants?referenceName=10&start=94781858&referenceBases=G&alternateBases=A"
